@@ -1,0 +1,11 @@
+{
+  "category": "主食罐",
+  "brand": "ApiTestBrand",
+  "name": "API測試罐",
+  "flavors": ["口味A", "口味B"],
+  "capacity": "80g",
+  "price": 100,
+  "shopName": "Shopee",
+  "shopUrl": "https://example.com/test",
+  "inStock": true
+}

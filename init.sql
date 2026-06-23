@@ -1,0 +1,2 @@
+-- 選用：手動在 DBeaver 建庫參考。Docker / 本機啟動時表結構由 Hibernate 依 Entity 自動建立。
+-- 商品資料請由管理後台新增，不包含示範 INSERT。

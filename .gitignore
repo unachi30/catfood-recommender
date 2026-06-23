@@ -1,0 +1,23 @@
+# IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backend
+backend/target/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Root build output
+target/
+
+# Local secrets
+.env
+.env.local
+.env.*.local
