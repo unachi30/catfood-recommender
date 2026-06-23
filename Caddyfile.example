@@ -1,0 +1,9 @@
+# 複製為 Caddyfile，並把網域改成你的
+# cp Caddyfile.example Caddyfile
+{
+	email you@example.com
+}
+
+catfood.example.com {
+	reverse_proxy frontend:80
+}

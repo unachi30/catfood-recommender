@@ -89,3 +89,66 @@ deploy-all.bat
 - 登入: `POST /api/auth/login`
 - 註冊: `POST /api/users/register`
 - 罐頭清單: `GET /api/cans`（訪客可瀏覽）
+
+## 公開上線（讓大家直接點網址）
+
+GitHub 開源 ≠ 公開網站。要讓使用者不用自己跑 Docker，需要把服務部署到 **24 小時開著的雲端主機**。
+
+### 推薦方案：Oracle Cloud 免費 VM + 現有 Docker（副業最划算）
+
+| 項目 | 費用 | 說明 |
+|------|------|------|
+| Oracle Cloud Always Free VM | 免費 | 可長期跑 `docker compose` |
+| 網域（如 `.com`） | 約每年數百元 | 副業建議一定要有，才有 HTTPS 網址 |
+| 本專案 Docker | 免費 | 已支援 |
+
+**不建議**只靠 Render 免費方案當副業：會休眠、冷啟動慢，MySQL 也常需付費。
+
+### 上線步驟概要
+
+1. **申請 Oracle Cloud** 免費 ARM VM（Ubuntu）
+2. **安裝 Docker** + 開放防火牆 **80 / 443**
+3. **購買網域**（Cloudflare / Namecheap 等），A 記錄指向 VM 公網 IP
+4. **在 VM 上 clone 專案**：
+
+```sh
+git clone https://github.com/unachi30/catfood-recommender.git
+cd catfood-recommender
+cp .env.example .env          # 填入網域、強密碼
+cp Caddyfile.example Caddyfile  # 改成你的網域
+```
+
+5. **編輯 `.env`**（必改）：
+
+```env
+APP_CORS_ALLOWED_ORIGINS=https://你的網域
+MYSQL_ROOT_PASSWORD=隨機強密碼
+APP_JWT_SECRET=隨機至少32字元
+```
+
+6. **啟動正式環境**（含 HTTPS 自動憑證）：
+
+```sh
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+```
+
+7. 瀏覽器開啟 `https://你的網域`
+
+### 正式環境與本機的差異
+
+| | 本機 `docker compose up` | 正式 `docker-compose.prod.yml` |
+|--|--------------------------|--------------------------------|
+| 網址 | http://localhost:5173 | https://你的網域 |
+| MySQL 對外 port | 3307（本機 DBeaver） | **不對外開放**（較安全） |
+| HTTPS | 無 | Caddy 自動申請 |
+| 密碼 | 預設 admin123 | `.env` 自訂強密碼 |
+
+### 上線後必做
+
+- 用 `admin` / `admin123` 登入後 **立刻改密碼**（或之後關閉預設帳號種子）
+- `.env` 不要 commit 到 GitHub
+- 首次商品清單為空，需管理員自行新增
+
+### 備用方案（較省事但可能月費）
+
+前端 [Cloudflare Pages](https://pages.cloudflare.com/) + 後端 [Render](https://render.com/) + 付費 MySQL。需拆開部署，並在 build 時設定 `VITE_API_BASE_URL=https://api.你的網域/api`。
